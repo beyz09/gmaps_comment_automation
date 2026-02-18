@@ -82,16 +82,26 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
 
 def _try_click_reviews_button(driver, timeout=5):
     """Yorumlar butonuna tıklamayı dener."""
-    try:
-        yorumlar_xpath = "//button[contains(@aria-label, 'Yorumlar') or .//span[contains(., 'Yorumlar')]]"
-        yorumlar_button = WebDriverWait(driver, timeout).until(
-            EC.element_to_be_clickable((By.XPATH, yorumlar_xpath))
-        )
-        yorumlar_button.click()
-        time.sleep(3)
-        return True
-    except TimeoutException:
-        return False
+    xpaths = [
+        "//button[contains(@aria-label, 'Yorumlar')]",
+        "//button[contains(@aria-label, 'Reviews')]",
+        "//button[.//span[contains(text(), 'Yorumlar')]]",
+        "//button[.//span[contains(text(), 'Reviews')]]",
+        "//div[@role='tab'][contains(., 'Yorumlar')]",
+        "//div[@role='tab'][contains(., 'Reviews')]",
+    ]
+    for xpath in xpaths:
+        try:
+            btn = WebDriverWait(driver, timeout).until(
+                EC.element_to_be_clickable((By.XPATH, xpath))
+            )
+            btn.click()
+            time.sleep(3)
+            print(f"Yorumlar butonuna tıklandı: {xpath}")
+            return True
+        except TimeoutException:
+            continue
+    return False
 
 
 def _find_business_in_results(driver, business_name):
