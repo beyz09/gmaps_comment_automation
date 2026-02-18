@@ -52,14 +52,15 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
         # Eğer URL zaten /maps/place/ içeriyorsa direkt işletme sayfasındayız
         current_url = driver.current_url
         if "/maps/place/" in current_url:
-            print("Direkt işletme sayfasına yönlendirildi, yorumlar aranıyor...")
+            print("Direkt işletme sayfasına yönlendirildi.")
             time.sleep(3)
-            if _try_click_reviews_button(driver, timeout=10):
+            # Önce Yorumlar sekmesine tıklamayı dene
+            if _try_click_reviews_button(driver, timeout=5):
                 return True
-            print("Yorumlar butonu bulunamadı, sayfa kaynağı kontrol ediliyor...")
-            print(f"URL: {current_url}")
-            print(f"Başlık: {driver.title}")
-            return False
+            # Buton bulunamazsa zaten genel bakış sayfasındayız, yorumlar burada
+            print("Yorumlar sekmesi bulunamadı, genel bakış sayfasından yorumlar çekilecek.")
+            return True  # Yine de devam et, yorumlar genel bakışta görünüyor
+
         
         # Önce yorumlar butonunu dene (tek sonuç varsa direkt açılır)
         if _try_click_reviews_button(driver):
