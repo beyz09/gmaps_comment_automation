@@ -49,6 +49,18 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
     try:
         print(f"Arama sonuçları bekleniyor...")
         
+        # Eğer URL zaten /maps/place/ içeriyorsa direkt işletme sayfasındayız
+        current_url = driver.current_url
+        if "/maps/place/" in current_url:
+            print("Direkt işletme sayfasına yönlendirildi, yorumlar aranıyor...")
+            time.sleep(3)
+            if _try_click_reviews_button(driver, timeout=10):
+                return True
+            print("Yorumlar butonu bulunamadı, sayfa kaynağı kontrol ediliyor...")
+            print(f"URL: {current_url}")
+            print(f"Başlık: {driver.title}")
+            return False
+        
         # Önce yorumlar butonunu dene (tek sonuç varsa direkt açılır)
         if _try_click_reviews_button(driver):
             return True
@@ -69,7 +81,6 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
         print(f"Seçilen işletme: '{target_business['name']}'")
         driver.execute_script("arguments[0].click();", target_business['element'])
         time.sleep(5)
-
         
         return _try_click_reviews_button(driver, timeout=15)
         
