@@ -27,6 +27,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["📥 Yorum Topla", "🔍 Toplu Tarama",
 with tab1:
     st.header("Google Maps'ten Yorum Toplama")
     st.write("Belirtilen **tek işletme** için yorumları otomatik olarak toplar.")
+    st.warning("⚠️ Bu özellik yalnızca **Headless Mod** açıkken ve yerel/VPS ortamında çalışır. Tarayıcı gerektiren işlemler için Headless Mod'u aktif edin.")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -73,6 +74,7 @@ with tab1:
 with tab2:
     st.header("Toplu İşletme Tarama")
     st.write("Belirli bir bölgedeki tüm işletmeleri tarar ve yorumlarını toplar.")
+    st.warning("⚠️ Bu özellik yalnızca **Headless Mod** açıkken ve yerel/VPS ortamında çalışır. Tarayıcı gerektiren işlemler için Headless Mod'u aktif edin.")
     
     st.subheader("1️⃣ İşletme Keşfi")
     st.write("Önce işletmeleri bulup veritabanına kaydedin.")
