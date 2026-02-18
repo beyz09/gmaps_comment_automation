@@ -26,7 +26,18 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
     """Google Maps'te işletmeyi arar ve yorumlar sekmesini açar."""
     print(f"Google Maps açılıyor...")
     driver.get("https://www.google.com/maps")
-    time.sleep(4)  # Headless modda daha uzun bekleme
+    time.sleep(6)  # VPS'te daha uzun bekleme
+    
+    # Consent/cookie popup varsa kabul et
+    try:
+        consent_btns = driver.find_elements(By.XPATH, 
+            "//button[contains(., 'Kabul') or contains(., 'Accept') or contains(., 'Tümünü kabul') or contains(., 'Agree')]")
+        if consent_btns:
+            consent_btns[0].click()
+            print("Çerez popup'ı kabul edildi.")
+            time.sleep(3)
+    except:
+        pass
     
     try:
         print(f"'{isletme_adi_tam_sorgusu}' aranıyor...")
@@ -54,16 +65,15 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
         search_box.send_keys(Keys.RETURN)
         
         print("Arama yapıldı, sonuçlar bekleniyor...")
-        time.sleep(7)  # Headless modda daha uzun bekleme
+        time.sleep(10)  # VPS'te daha uzun bekleme
         
         if _try_click_reviews_button(driver):
             return True
         
         target_business = _find_business_in_results(driver, business_name)
         if not target_business:
-            # Biraz daha bekle ve tekrar dene
             print("İlk denemede bulunamadı, bekleniyor...")
-            time.sleep(3)
+            time.sleep(6)
             target_business = _find_business_in_results(driver, business_name)
             
         if not target_business:
