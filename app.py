@@ -27,54 +27,30 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["📥 Yorum Topla", "🔍 Toplu Tarama",
 with tab1:
     st.header("Google Maps'ten Yorum Toplama")
     st.write("Belirtilen **tek işletme** için yorumları otomatik olarak toplar.")
-    st.warning("⚠️ Bu özellik yalnızca **Headless Mod** açıkken ve yerel/VPS ortamında çalışır. Tarayıcı gerektiren işlemler için Headless Mod'u aktif edin.")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        isletme_adi = st.text_input("İşletme Adı", "Gratis", key="single_name")
-    with col2:
-        sehir_single = st.text_input("Şehir", "Bartın", key="single_city")
-    with col3:
-        ilce_single = st.text_input("İlçe", "Merkez", key="single_district")
+    st.error("""
+    🚫 **Bu özellik demo ortamında çalıştırılamamaktadır.**
     
-    headless = st.checkbox("Headless Mod (Arka Planda Çalıştır)", value=True, key="single_headless")
-
-    if st.button("📥 Yorumları Topla", type="primary", key="single_collect"):
-        isletme_sorgu = f"{isletme_adi} {sehir_single} {ilce_single}"
-        st.info(f"Arama sorgusu: **{isletme_sorgu}**")
-        
-        with st.spinner("Yorumlar toplanıyor... Bu işlem uzun sürebilir."):
-            try:
-                cmd = [sys.executable, "gmapsv1.py"]
-                if headless:
-                    cmd.append("--headless")
-                env = os.environ.copy()
-                env["ISLETME_ADI_TAM_SORGUSU"] = isletme_sorgu
-
-                result = subprocess.run(cmd, capture_output=True, text=True, env=env, 
-                                        cwd=os.path.dirname(os.path.abspath(__file__)), 
-                                        encoding='utf-8', errors='replace')
-
-                st.subheader("Çıktı:")
-                if result.stdout:
-                    st.text_area("Standart Çıktı", result.stdout, height=300)
-                if result.stderr:
-                    st.error("Hata Çıktısı:")
-                    st.text_area("Hata", result.stderr, height=200)
-
-                if result.returncode == 0:
-                    st.success("Yorum toplama tamamlandı!")
-                else:
-                    st.error(f"Yorum toplama başarısız. Çıkış kodu: {result.returncode}")
-
-            except Exception as e:
-                st.error(f"Hata: {e}")
+    Scraping özelliği, sunucu ortamında Google Maps'in bot kısıtlamaları nedeniyle çalışmamaktadır.
+    
+    Bu özelliği test etmek için projeyi yerel bilgisayarınıza kurabilirsiniz:
+    👉 [GitHub Reposu](https://github.com/beyz09/gmaps_comment_automation)
+    """)
+    st.info("💡 **Analiz** sekmesinden mevcut verilerle analizleri inceleyebilirsiniz.")
 
 # Sekme 2: Toplu Tarama
 with tab2:
     st.header("Toplu İşletme Tarama")
     st.write("Belirli bir bölgedeki tüm işletmeleri tarar ve yorumlarını toplar.")
-    st.warning("⚠️ Bu özellik yalnızca **Headless Mod** açıkken ve yerel/VPS ortamında çalışır. Tarayıcı gerektiren işlemler için Headless Mod'u aktif edin.")
+    st.error("""
+    🚫 **Bu özellik demo ortamında çalıştırılamamaktadır.**
+    
+    Scraping özelliği, sunucu ortamında Google Maps'in bot kısıtlamaları nedeniyle çalışmamaktadır.
+    
+    Bu özelliği test etmek için projeyi yerel bilgisayarınıza kurabilirsiniz:
+    👉 [GitHub Reposu](https://github.com/beyz09/gmaps_comment_automation)
+    """)
+    st.info("💡 **Analiz** sekmesinden mevcut verilerle analizleri inceleyebilirsiniz.")
+
     
     st.subheader("1️⃣ İşletme Keşfi")
     st.write("Önce işletmeleri bulup veritabanına kaydedin.")
