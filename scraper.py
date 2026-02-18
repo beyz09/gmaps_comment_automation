@@ -24,9 +24,14 @@ from utils import (
 
 def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
     """Google Maps'te işletmeyi arar ve yorumlar sekmesini açar."""
-    print(f"Google Maps açılıyor...")
-    driver.get("https://www.google.com/maps")
-    time.sleep(6)  # VPS'te daha uzun bekleme
+    import urllib.parse
+    
+    # Direkt arama URL'si ile git (daha güvenilir)
+    encoded_query = urllib.parse.quote(isletme_adi_tam_sorgusu)
+    search_url = f"https://www.google.com/maps/search/{encoded_query}"
+    print(f"Google Maps arama URL'sine gidiliyor: {search_url}")
+    driver.get(search_url)
+    time.sleep(8)  # VPS'te daha uzun bekleme
     
     # Consent/cookie popup varsa kabul et
     try:
@@ -36,40 +41,19 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
             consent_btns[0].click()
             print("Çerez popup'ı kabul edildi.")
             time.sleep(3)
+            driver.get(search_url)
+            time.sleep(8)
     except:
         pass
     
     try:
-        print(f"'{isletme_adi_tam_sorgusu}' aranıyor...")
+        print(f"Arama sonuçları bekleniyor...")
         
-        search_box = None
-        try:
-            search_box = WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.ID, "searchboxinput"))
-            )
-        except TimeoutException:
-            try:
-                search_box = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.NAME, "q"))
-                )
-            except TimeoutException:
-                # CSS selector ile de dene
-                search_box = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, "input[name='q'], input#searchboxinput"))
-                )
-        
-        search_box.clear()
-        time.sleep(0.5)
-        search_box.send_keys(isletme_adi_tam_sorgusu)
-        time.sleep(1)
-        search_box.send_keys(Keys.RETURN)
-        
-        print("Arama yapıldı, sonuçlar bekleniyor...")
-        time.sleep(10)  # VPS'te daha uzun bekleme
-        
+        # Önce yorumlar butonunu dene (tek sonuç varsa direkt açılır)
         if _try_click_reviews_button(driver):
             return True
         
+        # Birden fazla sonuç varsa listeden seç
         target_business = _find_business_in_results(driver, business_name)
         if not target_business:
             print("İlk denemede bulunamadı, bekleniyor...")
@@ -78,34 +62,14 @@ def isletme_ara(driver, isletme_adi_tam_sorgusu, business_name):
             
         if not target_business:
             print(f"HATA: '{business_name}' işletmesi bulunamadı!")
-            # Debug: Sayfa kaynağını kontrol et
-            try:
-                page_source = driver.page_source
-                if "consent" in page_source.lower() or "agree" in page_source.lower():
-                    print("UYARI: Çerez/consent popup tespit edildi!")
-                    # Consent butonuna tıklamayı dene
-                    try:
-                        consent_btn = driver.find_element(By.XPATH, "//button[contains(., 'Kabul') or contains(., 'Accept') or contains(., 'Tümünü kabul')]")
-                        consent_btn.click()
-                        time.sleep(2)
-                        # Aramayı tekrar dene
-                        search_box = driver.find_element(By.ID, "searchboxinput")
-                        search_box.clear()
-                        search_box.send_keys(isletme_adi_tam_sorgusu)
-                        search_box.send_keys(Keys.RETURN)
-                        time.sleep(5)
-                        target_business = _find_business_in_results(driver, business_name)
-                    except:
-                        pass
-            except:
-                pass
-            
-            if not target_business:
-                return False
+            print(f"Mevcut URL: {driver.current_url}")
+            print(f"Sayfa başlığı: {driver.title}")
+            return False
         
         print(f"Seçilen işletme: '{target_business['name']}'")
         driver.execute_script("arguments[0].click();", target_business['element'])
-        time.sleep(5)  # Headless modda daha uzun bekleme
+        time.sleep(5)
+
         
         return _try_click_reviews_button(driver, timeout=15)
         
